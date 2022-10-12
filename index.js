@@ -6,6 +6,7 @@ const app = express();
 // const mysql = require("mysql");
 
 const signupRoutes = require("./routes/auth");
+const productRoutes = require("./routes/product");
 // const multer = require("multer");
 // const jwt = require("jsonwebtoken");
 
@@ -30,6 +31,7 @@ conn.connect((err) => {
 //routes
 
 app.use("/api", signupRoutes);
+app.use("/api", productRoutes);
 
 // Server listening
 
