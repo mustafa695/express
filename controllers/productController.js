@@ -22,22 +22,22 @@ const insertProduct = async (req, res) => {
         return res.send("Title should be unique for slug.");
       } else {
         let sql =
-          "INSERT INTO products (name, slug, description, rating, category, price, quantity) VALUES (?,?,?,?,?,?,?)";
+          "INSERT INTO products (name, slug, description, rating, category, price, quantity, views) VALUES (?,?,?,?,?,?,?,?)";
         conn.query(
           sql,
           [
             data.name,
             slug,
             data.description,
-            data.rating,
+            data.rating == null ? 0 : +data.rating,
             data.category,
-            data.price,
-            data.quantity,
+            +data.price,
+            +data.quantity,
+            0,
           ],
           async (error, result) => {
             if (error) throw error;
 
-            console.log(req.files.length);
             let urls = [];
             for (let j = 0; j < req.files.length; j++) {
               try {
@@ -96,7 +96,7 @@ function getGalleryData(data) {
 
 const getProducts = async (req, res) => {
   let offset = (req.query.page - 1) * req.query.limit + 1;
-  
+
   let sql = `SELECT * FROM products ORDER BY name LIMIT ${
     req.query.limit
   } OFFSET ${req.query.page == 1 ? 0 : offset}`;
@@ -137,8 +137,22 @@ const getProductByID = (req, res) => {
             "SELECT images, id FROM gallery WHERE p_id=" + result[0]?.id,
             (err, resp) => {
               if (err) throw err;
-              result[0].images = resp;
-              res.send(result);
+              conn.query(
+                "SELECT COUNT(id) as 'count' FROM reviews WHERE productId = ?",
+                [result[0].id],
+                (err, revResp) => {
+                  if (err) throw err;
+                  // rating calculate....
+
+                  let ratingTotal = result[0]?.rating / revResp[0].count;
+                  let rating = ratingTotal.toFixed(1);
+
+                  result[0].images = resp;
+                  result[0].rating = +rating;
+                  result[0].views += 1; 
+                  res.send(result);
+                }
+              );
             }
           );
         }
@@ -149,23 +163,45 @@ const getProductByID = (req, res) => {
   });
 };
 
-// const uploadImages = async (req, res) => {
-//   console.log(req.files.length);
-//   let urls = [];
-//   for (let j = 0; j < req.files.length; j++) {
-//     try {
-//       const bucket = await admin.storage().bucket().file(req.files[j].originalname);
-//       await bucket.createWriteStream().end(req.files[j].buffer);
-//       const signedURLconfig = { action: "read", expires: "01-01-2030" };
-//       const url = await bucket.getSignedUrl(signedURLconfig);
-//       urls.push(url);
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   }
-//   console.log(urls,"===============urls array");
-//   res.send("kk");
-// };
+//update products
+
+const updateProduct = (req, res) => {
+  res.send("Product Updated")
+};
+
+//update gallery
+const updateGallery = async (req, res) => {
+  const ids = req.body.images;
+  let date = new Date();
+
+  let urls = [];
+  for (let a = 0; a < ids.length; a++) {
+    let filename = date.getTime() + "-" + req.files[a].originalname;
+    try {
+      const bucket = await admin.storage().bucket().file(filename);
+
+      await bucket.createWriteStream().end(req.files[a].buffer);
+      const signedURLconfig = {
+        action: "read",
+        expires: "01-01-2030",
+      };
+      const url = await bucket.getSignedUrl(signedURLconfig);
+
+      let sql = "UPDATE gallery SET images = ? WHERE id = ?";
+      conn.query(sql, [url, ids[a].id], (err, result) => {
+        if (err) throw err;
+      });
+      urls.push(url);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  Promise.all(urls)
+    .then(() => {
+      res.send("Images updated");
+    })
+    .catch((err) => console.log(err));
+};
 
 // recent products
 // related products
@@ -175,4 +211,6 @@ module.exports = {
   insertProduct,
   getProducts,
   getProductByID,
+  updateGallery,
+  updateProduct,
 };

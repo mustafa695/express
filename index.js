@@ -3,12 +3,11 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
-// const mysql = require("mysql");
 
 const signupRoutes = require("./routes/auth");
 const productRoutes = require("./routes/product");
-// const multer = require("multer");
-// const jwt = require("jsonwebtoken");
+const reviewRoutes = require("./routes/review");
+const orderRoutes = require("./routes/order");
 
 var path = require("path");
 const conn = require("./connection");
@@ -32,6 +31,8 @@ conn.connect((err) => {
 
 app.use("/api", signupRoutes);
 app.use("/api", productRoutes);
+app.use("/api", reviewRoutes);
+app.use("/api", orderRoutes);
 
 // Server listening
 
