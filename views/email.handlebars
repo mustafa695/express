@@ -1,0 +1,98 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>Welcome Email</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body{ font-family: 'Poppins', sans-serif !important; } .main{ max-width:
+      70%; min-width: 300px; margin: 0 auto; background: #FDFDFD; padding: 24px
+      10px; border-radius: 8px; border: 1px solid #d5d5d5; } .top{
+      background-color: #537CA2; padding: 16px 10px; border-radius: 6px; } .top
+      h3 { font-weight: 900; color: #fff; padding: 0; margin: 0; font-size:
+      32px; } .int_txt{ margin-top: 2rem; font-size: 16.5px; } .title{
+      font-size: 33px; font-weight: 900; margin: 1.4rem 0; color: #434343;}
+      table, th, td { border: 1px solid #b9b9b9; border-collapse: collapse;
+      }table tr th { text-align:left; height:42px; padding: 0 6px; font-weight:
+      900; color: #434343; } table tr td { text-align:left; height:35px;
+      padding: 0 6px; font-weight: 600; } .row-b{ display: flex;
+      justify-content: space-between; align-items: center; width: 100%; }
+      .col-b{ margin-top: 1rem; width: 50%; } .d_txt{ font-size: 16px; padding:
+      0; margin: 0; color: #434343; line-height: 1.6rem; } .cust_dt_txt {
+      margin: 0; padding: 0; font-size: 16px; font-weight: 400; line-height:
+      2rem;} .footer{ text-align: center; font-size: 14px; font-weight: 700;
+      color: #537CA2; margin: 5rem 0 0; } @media (max-width: 551px) { .top h3 {
+      font-size: 18px !important; } .title{ font-size: 18px !important; }
+      .int_txt { font-size: 13.5px; } table tr th { font-size: 12.5px; height:
+      25px; } table tr td { font-size: 12px; height: 25px; font-weight: 500; }
+      .cust_dt_txt, .d_txt {font-size: 13.5px;} .row-b { display: block
+      !important; } .col-b {width: 100%;} }
+    </style>
+  </head>
+  <body>
+    <h2>Hello {{name}}! </h2>
+    <p>We're glad to have you on board at {{company}}. </p>
+    <div class="main">
+      {{! header  }}
+      <div class="top">
+        <h3 style="font-family: 'Poppins', sans-serif !important">Thank you for
+          your order</h3>
+      </div>
+      <div style="padding: 0 14px;">
+        <p class="int_txt">Your order has been received and is now being
+          proccessed. Your order details are shown below for your reference:</p>
+        <h1 class="title">Order: {{ordId}}</h1>
+        {{! table  }}
+
+        <table style="width:100%">
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+          </tr>
+          {{#each product}}
+            <tr>
+              <td style="text-transform: capitalize;">{{name}}</td>
+              <td>{{buyQunat}}</td>
+              <td>{{price}}</td>
+            </tr>
+          {{/each}}
+          <tr>
+            <td colspan="2">Cart Subtotal:</td>
+            <td>${{total}}</td>
+          </tr>
+          <tr>
+            <td colspan="2">Shipping:</td>
+            <td>Free Shipping</td>
+          </tr>
+          <tr>
+            <td colspan="2">Order Total:</td>
+            <td>${{total}}</td>
+          </tr>
+        </table>
+        <h1 class="title">Customer details</h1>
+        <h4 class="cust_dt_txt"><b>Email:</b> {{email}}</h4>
+        <h4 class="cust_dt_txt"><b>Phone no:</b> {{contact}}</h4>
+
+        <div class="row-b">
+          <div class="col-b">
+            <h1 class="title">Billing address</h1>
+            <p class="d_txt">{{city}}</p>
+            <p class="d_txt">{{billing_address}}</p>
+            <p class="d_txt">Sindh, Karachi 74900</p>
+          </div>
+          <div class="col-b">
+            <h1 class="title">Shipping address</h1>
+            <p class="d_txt">{{city}}</p>
+            <p class="d_txt">{{ship_address}}</p>
+            <p class="d_txt">Sindh, Karachi 74900</p>
+          </div>
+        </div>
+      </div>
+      <h3 class="footer">Copyright &copy; 2022, Mustafa Ahmed</h3>
+    </div>
+  </body>
+</html>

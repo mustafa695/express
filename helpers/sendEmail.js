@@ -1,6 +1,20 @@
+const hbs = require("nodemailer-express-handlebars");
 const nodemailer = require("nodemailer");
+const path = require("path");
 
-function sendEmail(user, subject, body) {
+function sendEmail(
+  name,
+  user,
+  contact,
+  billing_address,
+  ship_address,
+  country,
+  city,
+  subject,
+  ordId,
+  product,
+  total
+) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -9,11 +23,37 @@ function sendEmail(user, subject, body) {
     },
   });
 
+  // point to the template folder
+  const handlebarOptions = {
+    viewEngine: {
+      partialsDir: path.resolve("./views/"),
+      defaultLayout: false,
+    },
+    viewPath: path.resolve("./views/"),
+  };
+
+  // use a template file with nodemailer
+  transporter.use("compile", hbs(handlebarOptions));
+
   const mailOptions = {
     from: process.env.SENDER_EMAIL,
     to: user,
     subject: subject,
-    text: body,
+    template: "email",
+    context: {
+      name: name, // replace {{name}} with Adebola
+      company: "MA Inc.",
+      ordId: ordId,
+      product: product,
+      total: total,
+      contact: contact,
+      billing_address: billing_address,
+      ship_address: ship_address,
+      email: user,
+      country: country,
+      city: city
+    },
+    // text: body,
   };
 
   return transporter.sendMail(mailOptions);
